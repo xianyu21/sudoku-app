@@ -1,12 +1,17 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useTheme } from '@/composables/useTheme';
-import { Play, Trophy, Moon, Sun } from 'lucide-vue-next';
+import { Play, Trophy, Moon, Sun, History } from 'lucide-vue-next';
 
 const router = useRouter();
 const { theme, toggleTheme, isDark } = useTheme();
 const selectedDifficulty = ref('easy');
+const hasSavedProgress = ref(false);
+
+const hasProgress = computed(() => {
+  return localStorage.getItem('sudoku-progress') !== null;
+});
 
 function startGame() {
   router.push({
@@ -15,9 +20,20 @@ function startGame() {
   });
 }
 
+function continueGame() {
+  router.push({
+    name: 'game',
+    query: { continue: 'true' }
+  });
+}
+
 function goToProfile() {
   router.push({ name: 'profile' });
 }
+
+onMounted(() => {
+  hasSavedProgress.value = hasProgress.value;
+});
 </script>
 
 <template>
@@ -44,6 +60,15 @@ function goToProfile() {
       </div>
 
       <div class="flex-1 flex flex-col justify-center">
+        <button
+          v-if="hasProgress"
+          @click="continueGame"
+          class="w-full py-4 mb-4 bg-amber-500 text-white rounded-2xl font-bold text-lg shadow-lg hover:bg-amber-600 transition-all active:scale-95 touch-action-manipulation flex items-center justify-center gap-2"
+        >
+          <History class="w-6 h-6" />
+          继续游戏
+        </button>
+
         <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-6 text-center">
           选择难度
         </h2>
@@ -76,7 +101,7 @@ function goToProfile() {
           class="w-full py-5 bg-green-500 text-white rounded-2xl font-bold text-xl shadow-lg hover:bg-green-600 transition-all active:scale-95 touch-action-manipulation flex items-center justify-center gap-3"
         >
           <Play class="w-7 h-7" />
-          开始游戏
+          开始新游戏
         </button>
       </div>
 

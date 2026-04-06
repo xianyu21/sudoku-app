@@ -88,7 +88,7 @@ function getBorderClass(row, col) {
 </script>
 
 <template>
-  <div class="grid grid-cols-9 gap-0 bg-gray-800 dark:bg-gray-600 p-0.5 rounded-lg shadow-lg touch-manipulation">
+  <div class="grid grid-cols-9 gap-0 bg-amber-800 dark:bg-amber-900 p-1 rounded-xl shadow-xl touch-manipulation">
     <div
       v-for="row in 9"
       :key="row"
