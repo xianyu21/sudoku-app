@@ -1,15 +1,13 @@
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted, watch, onBeforeUnmount } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useTheme } from '../composables/useTheme';
 import SudokuBoard from '../components/SudokuBoard.vue';
 import NumberKeyboard from '../components/NumberKeyboard.vue';
 import { generateSudoku, checkBoardErrors, isBoardComplete, isBoardCorrect, formatTime } from '../lib/sudoku';
-import { Moon, Sun, RotateCcw, Trophy, Clock, CheckCircle2, ArrowLeft } from 'lucide-vue-next';
+import { RotateCcw, Trophy, Clock, CheckCircle2, ArrowLeft } from 'lucide-vue-next';
 
 const router = useRouter();
 const route = useRoute();
-const { theme, toggleTheme, isDark } = useTheme();
 
 const difficulty = ref('easy');
 const board = ref(Array(9).fill(null).map(() => Array(9).fill(null)));
@@ -208,51 +206,27 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300 flex flex-col">
+  <div class="min-h-screen bg-gray-50 flex flex-col">
     <div class="container mx-auto px-4 py-6 max-w-2xl flex-1 flex flex-col">
       <header class="flex justify-between items-center mb-6">
         <button
           @click="goBack"
-          class="p-3 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors active:scale-95"
+          class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors active:scale-95"
         >
-          <ArrowLeft class="w-6 h-6 text-gray-700 dark:text-gray-300" />
+          <ArrowLeft class="w-6 h-6 text-gray-700" />
         </button>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 class="text-2xl font-bold text-gray-900">
           🧩 数独游戏
         </h1>
-        <button
-          @click="toggleTheme"
-          class="p-3 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors active:scale-95"
-        >
-          <Sun v-if="isDark" class="w-6 h-6 text-yellow-500" />
-          <Moon v-else class="w-6 h-6 text-gray-700" />
-        </button>
+        <div class="w-12"></div>
       </header>
 
-      <div class="flex justify-center gap-3 mb-4">
-        <button
-          v-for="level in ['easy', 'medium', 'hard']"
-          :key="level"
-          @click="changeDifficulty(level)"
-          :disabled="gameStarted && !gameWon"
-          :class="[
-            'px-4 py-2 rounded-lg font-medium transition-all active:scale-95 touch-action-manipulation',
-            difficulty === level
-              ? 'bg-blue-500 text-white shadow-lg'
-              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600',
-            (gameStarted && !gameWon) && 'opacity-50 cursor-not-allowed'
-          ]"
-        >
-          {{ level === 'easy' ? '简单' : level === 'medium' ? '中等' : '困难' }}
-        </button>
-      </div>
-
       <div class="flex justify-center items-center gap-6 mb-4">
-        <div class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+        <div class="flex items-center gap-2 text-gray-700">
           <Clock class="w-5 h-5" />
           <span class="text-lg sm:text-xl font-mono">{{ formatTime(timer) }}</span>
         </div>
-        <div class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+        <div class="flex items-center gap-2 text-gray-700">
           <Trophy class="w-5 h-5" />
           <span class="text-base sm:text-lg">{{ stats.gamesPlayed }} 局</span>
         </div>
@@ -290,14 +264,14 @@ onUnmounted(() => {
     </transition>
 
     <div v-if="gameWon" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl text-center max-w-sm mx-4">
+      <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl text-center max-w-sm mx-4">
         <CheckCircle2 class="w-16 sm:w-20 h-16 sm:h-20 text-green-500 mx-auto mb-4" />
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
           🎉 恭喜获胜！
         </h2>
-        <p class="text-gray-600 dark:text-gray-300 mb-2">
+        <p class="text-gray-600 mb-2">
           用时：{{ formatTime(timer) }}</p>
-        <p class="text-gray-600 dark:text-gray-300 mb-6">
+        <p class="text-gray-600 mb-6">
           难度：{{ difficulty === 'easy' ? '简单' : difficulty === 'medium' ? '中等' : '困难' }}
         </p>
         <div class="flex gap-3">
@@ -309,7 +283,7 @@ onUnmounted(() => {
           </button>
           <button
             @click="goBack"
-            class="flex-1 px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-all touch-action-manipulation"
+            class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-all touch-action-manipulation"
           >
             返回首页
           </button>

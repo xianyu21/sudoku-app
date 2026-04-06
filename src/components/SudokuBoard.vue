@@ -55,32 +55,32 @@ function getCellClass(row, col) {
   if (isSelected) {
     classes.push('bg-blue-500 text-white');
   } else if (isSameNumber(row, col) && value !== null) {
-    classes.push('bg-blue-200 dark:bg-blue-900');
+    classes.push('bg-blue-200');
   } else if (isSameRow(row) || isSameCol(col) || isSameBox(row, col)) {
-    classes.push('bg-blue-50 dark:bg-blue-950');
+    classes.push('bg-blue-50');
   }
 
   if (hasError) {
-    classes.push(isSelected ? 'bg-red-500' : 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400');
+    classes.push(isSelected ? 'bg-red-500' : 'bg-red-100 text-red-600');
   }
 
   if (isFixed && !isSelected && !hasError) {
-    classes.push('text-gray-900 dark:text-white font-bold');
+    classes.push('text-gray-900 font-bold');
   } else if (!isFixed && !isSelected && !hasError) {
-    classes.push('text-blue-600 dark:text-blue-400');
+    classes.push('text-blue-600');
   }
 
   return classes.join(' ');
 }
 
 function getBorderClass(row, col) {
-  const classes = ['border', 'border-gray-300 dark:border-gray-700'];
+  const classes = ['border', 'border-gray-300'];
   
   if (col % 3 === 2 && col !== 8) {
-    classes.push('border-r-2 border-r-gray-800 dark:border-r-gray-400');
+    classes.push('border-r-2 border-r-gray-800');
   }
   if (row % 3 === 2 && row !== 8) {
-    classes.push('border-b-2 border-b-gray-800 dark:border-b-gray-400');
+    classes.push('border-b-2 border-b-gray-800');
   }
   
   return classes.join(' ');
@@ -88,7 +88,7 @@ function getBorderClass(row, col) {
 </script>
 
 <template>
-  <div class="grid grid-cols-9 gap-0 bg-amber-800 dark:bg-amber-900 p-1 rounded-xl shadow-xl touch-manipulation">
+  <div class="grid grid-cols-9 gap-0 bg-blue-100 p-1 rounded-xl shadow-xl touch-manipulation">
     <div
       v-for="row in 9"
       :key="row"
@@ -97,7 +97,7 @@ function getBorderClass(row, col) {
       <div
         v-for="col in 9"
         :key="col"
-        class="aspect-square flex items-center justify-center text-base sm:text-xl md:text-2xl cursor-pointer transition-all duration-150 hover:bg-blue-100 dark:hover:bg-blue-800 active:scale-95 touch-action-manipulation"
+        class="aspect-square flex items-center justify-center text-base sm:text-xl md:text-2xl cursor-pointer transition-all duration-150 hover:bg-blue-200 active:scale-95 touch-action-manipulation"
         :class="[getCellClass(row - 1, col - 1), getBorderClass(row - 1, col - 1)]"
         @click="emit('select-cell', row - 1, col - 1)"
       >
