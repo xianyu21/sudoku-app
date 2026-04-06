@@ -4,7 +4,7 @@ import { useRouter, useRoute } from 'vue-router';
 import SudokuBoard from '../components/SudokuBoard.vue';
 import NumberKeyboard from '../components/NumberKeyboard.vue';
 import { generateSudoku, checkBoardErrors, isBoardComplete, isBoardCorrect, formatTime } from '../lib/sudoku';
-import { RotateCcw, Trophy, Clock, CheckCircle2, ArrowLeft } from 'lucide-vue-next';
+import { RotateCcw, Trophy, Clock, CheckCircle2, ArrowLeft, Check } from 'lucide-vue-next';
 
 const router = useRouter();
 const route = useRoute();
@@ -19,6 +19,7 @@ const timer = ref(0);
 const gameWon = ref(false);
 const gameStarted = ref(false);
 const showKeyboard = ref(false);
+const showValidation = ref(false);
 const stats = reactive({
   gamesPlayed: 0,
   bestTime: {
@@ -72,7 +73,18 @@ function inputNumber(num) {
   if (initialBoard.value[row][col] !== null) return;
   
   board.value[row][col] = num;
-  errors.value = checkBoardErrors(board.value);
+  
+  // 根据难度级别决定是否进行实时错误检查
+  if (difficulty.value === 'easy') {
+    // 简单模式：实时检查错误
+    errors.value = checkBoardErrors(board.value);
+  } else if (difficulty.value === 'medium') {
+    // 中等模式：部分提示（只检查当前行、列和宫格）
+    const boardErrors = checkBoardErrors(board.value);
+    errors.value = Array(9).fill(false).map(() => Array(9).fill(false));
+    errors.value[row][col] = boardErrors[row][col];
+  }
+  // 困难模式：不进行任何提示
   
   checkWin();
 }
@@ -85,11 +97,51 @@ function deleteNumber() {
   if (initialBoard.value[row][col] !== null) return;
   
   board.value[row][col] = null;
-  errors.value = checkBoardErrors(board.value);
+  
+  // 根据难度级别决定是否进行实时错误检查
+  if (difficulty.value === 'easy') {
+    errors.value = checkBoardErrors(board.value);
+  } else if (difficulty.value === 'medium') {
+    // 中等模式：重新检查所有错误
+    const boardErrors = checkBoardErrors(board.value);
+    errors.value = Array(9).fill(false).map(() => Array(9).fill(false));
+    // 只标记当前行、列和宫格的错误
+    for (let i = 0; i < 9; i++) {
+      if (boardErrors[row][i]) errors.value[row][i] = true;
+      if (boardErrors[i][col]) errors.value[i][col] = true;
+    }
+    const boxRow = Math.floor(row / 3) * 3;
+    const boxCol = Math.floor(col / 3) * 3;
+    for (let i = boxRow; i < boxRow + 3; i++) {
+      for (let j = boxCol; j < boxCol + 3; j++) {
+        if (boardErrors[i][j]) errors.value[i][j] = true;
+      }
+    }
+  }
+  // 困难模式：不进行任何提示
 }
 
 function checkWin() {
   if (isBoardComplete(board.value) && isBoardCorrect(board.value, solution.value)) {
+    gameWon.value = true;
+    showKeyboard.value = false;
+    stopTimer();
+    updateStats();
+  }
+}
+
+function validateBoard() {
+  if (!isBoardComplete(board.value)) {
+    alert('请完成所有空格后再提交！');
+    return;
+  }
+  
+  // 验证时总是显示所有错误，不考虑难度级别
+  const boardErrors = checkBoardErrors(board.value);
+  errors.value = boardErrors;
+  showValidation.value = true;
+  
+  if (isBoardCorrect(board.value, solution.value)) {
     gameWon.value = true;
     showKeyboard.value = false;
     stopTimer();
@@ -244,6 +296,13 @@ onUnmounted(() => {
       </div>
 
       <div class="flex justify-center gap-4">
+        <button
+          @click="validateBoard"
+          class="px-6 py-3 bg-green-500 text-white rounded-lg font-medium flex items-center gap-2 hover:bg-green-600 transition-all active:scale-95 shadow-lg touch-action-manipulation"
+        >
+          <Check class="w-5 h-5" />
+          验证答案
+        </button>
         <button
           @click="startNewGame"
           class="px-6 py-3 bg-blue-500 text-white rounded-lg font-medium flex items-center gap-2 hover:bg-blue-600 transition-all active:scale-95 shadow-lg touch-action-manipulation"

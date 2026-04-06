@@ -88,22 +88,24 @@ function getBorderClass(row, col) {
 </script>
 
 <template>
-  <div class="grid grid-cols-9 gap-0 bg-blue-100 p-1 rounded-xl shadow-xl touch-manipulation">
-    <div
-      v-for="row in 9"
-      :key="row"
-      class="contents"
-    >
+  <div class="w-full max-w-md mx-auto">
+    <div class="grid grid-cols-9 gap-0 bg-blue-100 p-1 rounded-xl shadow-xl touch-manipulation w-full" style="aspect-ratio: 1/1;">
       <div
-        v-for="col in 9"
-        :key="col"
-        class="aspect-square flex items-center justify-center text-base sm:text-xl md:text-2xl cursor-pointer transition-all duration-150 hover:bg-blue-200 active:scale-95 touch-action-manipulation"
-        :class="[getCellClass(row - 1, col - 1), getBorderClass(row - 1, col - 1)]"
-        @click="emit('select-cell', row - 1, col - 1)"
+        v-for="row in 9"
+        :key="row"
+        class="contents"
       >
-        <span v-if="board[row - 1][col - 1]">
-          {{ board[row - 1][col - 1] }}
-        </span>
+        <div
+          v-for="col in 9"
+          :key="col"
+          class="aspect-square flex items-center justify-center text-sm sm:text-base md:text-xl lg:text-2xl cursor-pointer transition-all duration-150 hover:bg-blue-200 active:scale-95 touch-action-manipulation"
+          :class="[getCellClass(row - 1, col - 1), getBorderClass(row - 1, col - 1)]"
+          @click="emit('select-cell', row - 1, col - 1)"
+        >
+          <span v-if="board[row - 1][col - 1]">
+            {{ board[row - 1][col - 1] }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
